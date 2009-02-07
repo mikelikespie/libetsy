@@ -170,7 +170,7 @@ class EtsyUser(EtsyResource):
         return self.etsy.getFavoriteShopsOfUser(self.user_id, **params)
 
     def getShopDetails(self, **params):
-        return self.etsy.getShopDetails(self.user_id, **params):
+        return self.etsy.getShopDetails(self.user_id, **params)
 
 
 
