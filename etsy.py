@@ -147,9 +147,13 @@ class EtsyGiftGuide(EtsyResource):
     def getListings(self, **params):
         return self.etsy.getGiftGuideListings(self.guide_id, **params)
 
-class EtsyShop(EtsyResource):
-    def getFavorers(self, **params):
-        return self.etsy.getFavorersOfUser(self.user_id, **params)
+class EtsyShop(EtsyUser):
+    def getListings(self, **params):
+        return self.etsy.getlistings(self.user_id, **params)
+
+    def getFeaturedDetails(self, **params):
+        return self.etsy.getFeaturedDetails(self.user_id, **params)
+
 
 class EtsyListing(EtsyResource):
     def getFavorers(self, **params):
@@ -164,6 +168,11 @@ class EtsyUser(EtsyResource):
 
     def getFavoriteShops(self, **params):
         return self.etsy.getFavoriteShopsOfUser(self.user_id, **params)
+
+    def getShopDetails(self, **params):
+        return self.etsy.getShopDetails(self.user_id, **params):
+
+
 
 #Just used for method table:
 class EtsyMethod(EtsyResource):
