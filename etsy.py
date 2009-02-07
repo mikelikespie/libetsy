@@ -33,33 +33,57 @@ class Etsy(object):
         return u
 
     def getUsersByName(self, search_name, **params):
-        path = '/users/keywords/'
-        a = {'search_name':search_name}
-
-        a.update(params)
-
-        r = self._make_call(path, a)
-
+        path = '/users/keywords/%s' % search_name
+        r = self._make_call(path, params)
         return [EtsyUser(self, u) for u in r['results']]
+
+    def getShopDetails(self, user_id, **params):
+        path = '/shops/%s' % user_id
+        r = self._make_call(path, params)
+        return [EtsyShop(self, u) for u in r['results']]
+
+    def getFeaturedSellers(self, **params):
+        path = '/shop/featured'
+        r = self._make_call(path, params)
+        return [EtsyShop(self, u) for u in r['results']]
+
+    def getListings(self, user_id, **params):
+        path = '/users/%s/listings' % user_id
+        r = self._make_call(path, params)
+        return [EtsyListing(self, u) for u in r['results']]
+
+    def getShopsByName(self, search_name, **params):
+        path = '/users/keywords/%s' % search_name
+        r = self._make_call(path, params)
+        return [EtsyShop(self, u) for u in r['results']]
+
+    def getFeaturedDetails(self, user_id, **params):
+        path = '/users/%s/listings/featured' % user_id
+        r = self._make_call(path, params)
+        return [EtsyListing(self, u) for u in r['results']]
 
     def getFavoriteListingsOfUser(self, user_id, **params):
         path = '/users/%s/favorites/listings' % user_id
-
         r = self._make_call(path, params)
-
-        return [EtsyResource(self, u) for u in r['results']]
+        return [EtsyListing(self, u) for u in r['results']]
 
     def getFavorersOfUser(self, user_id, **params):
         path = '/users/%s/favorers' % user_id
-
         r = self._make_call(path, params)
-
         return [EtsyUser(self, u) for u in r['results']]
 
 
 
 
 
+class EtsyShop(EtsyResource):
+    pass
+
+class EtsyListing(EtsyResource):
+    pass
+
+class EtsyTag(EtsyResource):
+    pass
 
 class EtsyUser(EtsyResource):
     def getFavorers(self, **params):
