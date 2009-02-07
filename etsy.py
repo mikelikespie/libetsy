@@ -36,7 +36,7 @@ class Etsy(object):
     def getShopDetails(self, user_id, **params):
         path = '/shops/%s' % user_id
         r = self._make_call(path, params)
-        return [EtsyShop(self, u) for u in r['results']]
+        return EtsyShop(self, r['results'][0])
 
     def getFeaturedSellers(self, **params):
         path = '/shop/featured'
@@ -44,17 +44,17 @@ class Etsy(object):
         return [EtsyShop(self, u) for u in r['results']]
 
     def getListings(self, user_id, **params):
-        path = '/users/%s/listings' % user_id
+        path = '/shops/%s/listings' % user_id
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
 
     def getShopsByName(self, search_name, **params):
-        path = '/users/keywords/%s' % search_name
+        path = '/shops/keywords/%s' % search_name
         r = self._make_call(path, params)
         return [EtsyShop(self, u) for u in r['results']]
 
     def getFeaturedDetails(self, user_id, **params):
-        path = '/users/%s/listings/featured' % user_id
+        path = '/shops/%s/listings/featured' % user_id
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
 
@@ -167,7 +167,7 @@ class EtsyUser(EtsyResource):
 
 class EtsyShop(EtsyUser):
     def getListings(self, **params):
-        return self.etsy.getlistings(self.user_id, **params)
+        return self.etsy.getListings(self.user_id, **params)
 
     def getFeaturedDetails(self, **params):
         return self.etsy.getFeaturedDetails(self.user_id, **params)
