@@ -16,7 +16,6 @@ class Etsy(object):
         basedict.update(params)
         fullurl = self.base_url + path + '?' + urlencode(basedict)
         f = urlopen(fullurl)
-
         ret = json.load(f)
         f.close()
         return ret
@@ -24,11 +23,8 @@ class Etsy(object):
     def getUserDetails(self, user_id, **params):
         path = '/users/'
         a = {'user_id':user_id}
-
         a.update(params)
-
         r = self._make_call(path, a)
-
         u = EtsyUser(self, r['results'][0])
         return u
 
@@ -72,46 +68,68 @@ class Etsy(object):
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
 
-    def getListingsByKeywords(self, search_terms, **params):
+    def getListingsByKeyword(self, search_terms, **params):
         path = '/listings/keywords/%s' % search_terms
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
 
-
-
-    def getFavoriteListingsOfUser(self, user_id, **params):
-        path = '/users/%s/favorites/listings' % user_id
+    def getFrontFeaturedListings(self, **params):
+        path = '/listings/featured/front'
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
+
+    def getTopTags(self):
+        path = '/tags/top'
+        r = self._make_call(path, {})
+        return r['results']
+
+    def getChildTags(self, tag):
+        path = 'tags/%s/children' % tag
+        r = self._make_call(path, {})
+        return r['results']
 
     def getFavorersOfUser(self, user_id, **params):
         path = '/users/%s/favorers' % user_id
         r = self._make_call(path, params)
         return [EtsyUser(self, u) for u in r['results']]
 
+    def getFavoriteShopsOfUser(self, user_id, **params):
+        path = '/users/%s/favorites/shops' % user_id
+        r = self._make_call(path, params)
+        return [EtsyShop(self, u) for u in r['results']]
+
+    def getFavoriteListingsOfUser(self, user_id, **params):
+        path = '/users/%s/favorites/listings' % user_id
+        r = self._make_call(path, params)
+        return [EtsyListing(self, u) for u in r['results']]
+
+    def getFavorersOfListing(self, listing_id, **params):
+        path = '/listings/%s/favorers' % listing_id
+        r = self._make_call(path, params)
+        return [EtsyUser(self, u) for u in r['results']]
 
 
 
+    
 
 
 class EtsyShop(EtsyResource):
-    pass
+    def getFavorers(self, **params):
+        return self.etsy.getFavorersOfUser(self.user_id, **params)
 
 class EtsyListing(EtsyResource):
-    pass
-
-class EtsyTag(EtsyResource):
-    pass
+    def getFavorers(self, **params):
+        return self.etsy.getFavorersOfListing(self.listing_id, **params)
 
 class EtsyUser(EtsyResource):
     def getFavorers(self, **params):
-        return self.etsy.getFavorersOfUser(self.user_name, **params)
+        return self.etsy.getFavorersOfUser(self.user_id, **params)
 
     def getFavoriteListings(self, **params):
-        return self.etsy.getFavoriteListingsOfUser(self.user_name, **params)
+        return self.etsy.getFavoriteListingsOfUser(self.user_id, **params)
 
-    #def getFavoriteShops(self, **params):
-    #    return self.etsy.getFavoriteShopsOfUser(self.user_name, **params)
+    def getFavoriteShops(self, **params):
+        return self.etsy.getFavoriteShopsOfUser(self.user_id, **params)
 
 
 
