@@ -11,7 +11,7 @@ class Etsy(object):
     def __init__(self, api_key):
         self.__api_key = api_key
     
-    def _make_call(self, path, params):
+    def _make_call(self, path, params = {}):
         basedict = {"api_key":self.__api_key}
         basedict.update(params)
         fullurl = self.base_url + path + '?' + urlencode(basedict)
@@ -108,10 +108,44 @@ class Etsy(object):
         r = self._make_call(path, params)
         return [EtsyUser(self, u) for u in r['results']]
 
+    def getGiftGuides(self):
+        path = '/gift-guides'
+        r = self._make_call(path)
+        return [EtsyGiftGuide(self, u) for u in r['results']]
 
+    def getGiftGuideListings(self, guide_id, **params):
+        path = '/gift-guides/%s/listings' % guide_id
+        r = self._make_call(path, params)
+        return [EtsyGiftGuide(self, u) for u in r['results']]
 
-    
+    def getMethodTable(self):
+        path = '/'
+        r = self._make_call(path, {})
+        return [EtsyMethod(self, u) for u in r['results']]
 
+    def ping(self):
+        path = '/server/ping'
+        r = self._make_call(path, {})
+        return r['results'][0]
+
+    def getServerEpoch(self):
+        path = '/server/epoch'
+        r = self._make_call(path, {})
+        return r['results'][0]
+
+class EtsyResource (object):
+    def __init__(self, etsy, d):
+        self.__dict__ = d
+        self.etsy = etsy
+
+    def __repr__(self):
+        return '<' + ', '.join(['%s=%s' % (key, value.__repr__())
+                                for key, value
+                                in self.__dict__.iteritems()]) + '>'
+
+class EtsyGiftGuide(EtsyResource):
+    def getListings(self, **params):
+        return self.etsy.getGiftGuideListings(self.guide_id, **params)
 
 class EtsyShop(EtsyResource):
     def getFavorers(self, **params):
@@ -131,15 +165,8 @@ class EtsyUser(EtsyResource):
     def getFavoriteShops(self, **params):
         return self.etsy.getFavoriteShopsOfUser(self.user_id, **params)
 
+#Just used for method table:
+class EtsyMethod(EtsyResource):
+    pass
 
-
-class EtsyResource (object):
-    def __init__(self, etsy, d):
-        self.__dict__ = d
-        self.etsy = etsy
-
-    def __repr__(self):
-        return '<' + ', '.join(['%s=%s' % (key, value.__repr__())
-                                for key, value
-                                in self.__dict__.iteritems()]) + '>'
 
