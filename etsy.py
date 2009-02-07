@@ -62,6 +62,23 @@ class Etsy(object):
         r = self._make_call(path, params)
         return [EtsyListing(self, u) for u in r['results']]
 
+    def getListingDetails(self, listing_id, **params):
+        path = '/listings/%s' % listing_id
+        r = self._make_call(path, params)
+        return EtsyListing(self, r['results'][0])
+
+    def getListingsByTags(self, tags, **params):
+        path = '/listings/tags/%s' % tags
+        r = self._make_call(path, params)
+        return [EtsyListing(self, u) for u in r['results']]
+
+    def getListingsByKeywords(self, search_terms, **params):
+        path = '/listings/keywords/%s' % search_terms
+        r = self._make_call(path, params)
+        return [EtsyListing(self, u) for u in r['results']]
+
+
+
     def getFavoriteListingsOfUser(self, user_id, **params):
         path = '/users/%s/favorites/listings' % user_id
         r = self._make_call(path, params)
@@ -71,6 +88,7 @@ class Etsy(object):
         path = '/users/%s/favorers' % user_id
         r = self._make_call(path, params)
         return [EtsyUser(self, u) for u in r['results']]
+
 
 
 
