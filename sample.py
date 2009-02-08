@@ -23,3 +23,9 @@ s = me.getShopDetails()
 for l in s.getListings():
     print l.title
 
+
+#Now, let's get all the mike's on etsy
+
+mikes = etsy.getAll(e.getUsersByName, search_name='mike')
+
+print "We found %d Mikes" % len(mikes)

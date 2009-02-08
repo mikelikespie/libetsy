@@ -133,6 +133,21 @@ class Etsy(object):
         r = self._make_call(path, {})
         return r['results'][0]
 
+def getAll(func, max_ret = None, **params):
+    max_pag = 50
+    cur_pag = 0
+    cur_offset = 0
+    n_returned = 50
+    ret = []
+    while n_returned == max_pag and  (max_ret == None or  cur_offset < max_ret):
+        r = func(limit=max_pag, offset = cur_offset, **params)
+        n_returned = len(r)
+        cur_offset += max_pag
+        ret += r
+
+    return ret
+
+
 class EtsyResource (object):
     def __init__(self, etsy, d):
         self.__dict__ = d
